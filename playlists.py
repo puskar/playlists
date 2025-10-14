@@ -3,6 +3,7 @@ import html
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 
+### source the secrets file before running or you will get an auth error!
 
 scope = "playlist-modify-public"
 
@@ -33,7 +34,7 @@ def get_track_id(track):
         return track_ids
     else:
         return None
-        
+
 def get_playlist_id(plname):
     pl = sp.user_playlists(user, limit=50)
     for list in pl['items']:

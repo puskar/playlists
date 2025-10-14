@@ -1,0 +1,16 @@
+# To log to journalctl append `2>&1 | logger -t playlists` to the command.
+# If running multiple commands, enclose in pareas.
+
+# capture the audio, generate the index.xml, and add ID3v2 tags to the audio file
+55 05 * * 3  /home/puskar/.local/bin/postpodcastpost >> /home/puskar/.local/var/log/postpodcastpost.log 2>&1 
+
+# get the song's artist and title being played during the show
+* 5-6 * * 3  /home/puskar/workspace/github/puskar/playlists/songs.sh
+
+# process the songs and create a Spotify playlist with them
+10 7 * * 3    /home/puskar/workspace/github/puskar/playlists/make_playlists.sh >> /home/puskar/.local/var/log/postpodcastpost.log  2>&1 
+
+#Archive the podcasts on remote machines
+15 07 * * 3  rsync -avzP /home/puskar/podcasts blank.local:.archive
+20 07 * * 3  rsync -avzP /home/puskar/podcasts pihole.local:.archive
+25 07 * * 3  rsync -avzP /home/puskar/podcasts pi.hole:.archive
