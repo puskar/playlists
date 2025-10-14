@@ -1,6 +1,8 @@
+import datetime
+import html
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
-import html
+
 
 scope = "playlist-modify-public"
 
@@ -8,9 +10,11 @@ auth_manager=SpotifyOAuth(scope=scope)
 #auth_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
-#sp.user_playlist_create("mchpuskar", name="alpine_marmot - 10/08/2025", public=True, collaborative=False, description="alpine_marmot show for DATE")
-
 user = 'mchpuskar'
+today = datetime.date.today()
+sp.user_playlist_create(user, name=f"alpine_marmot - {today:%m/%d/%Y}" , public=True, collaborative=False, description=f"alpine_marmot music playlist for {today:%m/%d/%Y}")
+
+playlist_name = f"alpine_marmot - {today:%m/%d/%Y}"
 
 def read_songs(song_file):
     with open(song_file, 'r') as f:
@@ -33,12 +37,12 @@ def get_track_id(track):
 def get_playlist_id(plname):
     pl = sp.user_playlists(user, limit=50)
     for list in pl['items']:
-        if list['name'] == 'alpine_marmot - 10/08/2025':
+        if list['name'] == playlist_name:
             playlist_id = list['id']
             break
     return playlist_id
 
-plid = get_playlist_id('alpine_marmot - 10/08/2025')
+plid = get_playlist_id(playlist_name)
 
 songlist = read_songs('songs.txt')
 
@@ -46,6 +50,6 @@ for s in songlist:
     tracks = get_track_id(s)
     if tracks:
         print(f'Adding {s} to playlist')
-        #sp.playlist_add_items(plid, tracks)
+        sp.playlist_add_items(plid, tracks)
     else:
         print(f'Could not find {s} on Spotify')
