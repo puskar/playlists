@@ -12,13 +12,17 @@ auth_manager=SpotifyOAuth(scope=scope)
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
 user = 'mchpuskar'
+show = "alpine_marmot"
 today = datetime.date.today()
-plout=sp.user_playlist_create(user, name=f"alpine_marmot - {today:%m/%d/%Y}" , public=True, collaborative=False, description=f"alpine_marmot music playlist for {today:%m/%d/%Y}")
 
-plid=plout['id']
-pl_url=plout['external_urls']['spotify']
+playlist_name = f"{show} - {today:%m/%d/%Y}"
 
-playlist_name = f"alpine_marmot - {today:%m/%d/%Y}"
+plout = sp.user_playlist_create(user, name=playlist_name, public=True, collaborative=False, description=f"{show} music playlist for {today:%m/%d/%Y}")
+plid = plout['id']
+pl_url = plout['external_urls']['spotify']
+
+with open("/tmp/playlist_url", "w") as urlfile:
+  urlfile.write(pl_url)
 
 def read_songs(song_file):
     with open(song_file, 'r') as f:
@@ -30,13 +34,12 @@ def read_songs(song_file):
 def get_track_id(track):
     results = sp.search(q=track, limit=1)
     items = results['tracks']['items']
-    track_ids = []
     if items:
         track_id = items[0]['uri']
-        track_ids.append(track_id)
-        return track_ids
+        return track_id
     else:
         return None
+
 
 # use the return value from the user_playlist_create call instead of this function
 def get_playlist_id(plname):
@@ -51,10 +54,6 @@ def get_playlist_id(plname):
 
 songlist = read_songs('songs.txt')
 
-for s in songlist:
-    tracks = get_track_id(s)
-    if tracks:
-        print(f'Adding {s} to playlist')
-        sp.playlist_add_items(plid, tracks)
-    else:
-        print(f'Could not find {s} on Spotify')
+tracks=[print(f'Adding {s} to the list') or get_track_id(s) for s in songlist]
+
+sp.playlist_add_items(plid, tracks)
