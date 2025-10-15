@@ -13,7 +13,10 @@ sp = spotipy.Spotify(auth_manager=auth_manager)
 
 user = 'mchpuskar'
 today = datetime.date.today()
-sp.user_playlist_create(user, name=f"alpine_marmot - {today:%m/%d/%Y}" , public=True, collaborative=False, description=f"alpine_marmot music playlist for {today:%m/%d/%Y}")
+plout=sp.user_playlist_create(user, name=f"alpine_marmot - {today:%m/%d/%Y}" , public=True, collaborative=False, description=f"alpine_marmot music playlist for {today:%m/%d/%Y}")
+
+plid=plout['id']
+pl_url=plout['external_urls']['spotify']
 
 playlist_name = f"alpine_marmot - {today:%m/%d/%Y}"
 
@@ -35,6 +38,7 @@ def get_track_id(track):
     else:
         return None
 
+# use the return value from the user_playlist_create call instead of this function
 def get_playlist_id(plname):
     pl = sp.user_playlists(user, limit=50)
     for list in pl['items']:
@@ -43,7 +47,7 @@ def get_playlist_id(plname):
             break
     return playlist_id
 
-plid = get_playlist_id(playlist_name)
+#plid = get_playlist_id(playlist_name)
 
 songlist = read_songs('songs.txt')
 
