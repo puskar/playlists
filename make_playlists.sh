@@ -1,4 +1,4 @@
-#1/bin/sh
+#!/bin/bash
 
 set -x
 
@@ -9,3 +9,5 @@ uniq tmpsongs > songs.txt
 . /home/puskar/workspace/github/puskar/playlists/secrets
 
 ~puskar/workspace/github/puskar/playlists/.venv/bin/python3 ~puskar/workspace/github/puskar/playlists/playlists.py
+
+mv tmpsongs tmpsongs-lastweek
